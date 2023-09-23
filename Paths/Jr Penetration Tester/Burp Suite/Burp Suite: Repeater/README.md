@@ -13,7 +13,12 @@ Let's GO!
 - Repeater allows us to modify and resend intercepted requests to a target of our choosing. We capture requests in the proxy, manipulate, send - wash, rinse, repeat - as needed. Requests can also be created
   manually from scratch (similar to CL tool cURL).
 
-- In Repeater, we can edit and resend requests *repeatedly* until we obtain a response that helps us manually explore and test endpoint responses.
+- In Repeater, we can edit and resend requests *repeatedly*, allowing us to manually explore and test endpoints until we obtain a response that helps us gain more information about the target.
+
+
+## Task 3 - Basic Usage
+
+While we have the ability to craft a request from scratch, it is commonly more useful to start with a request captured in the Proxy tool, send it to Repeater where we can further edit and resend, trying different modifications, while also having the ability to navigate through our history of modifications if needed.
   
 
 
