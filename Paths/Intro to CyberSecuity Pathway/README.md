@@ -1,4 +1,4 @@
-# Introduction to Cyber Secutiy - Pathway
+# Introduction to Cyber Security - Pathway
 
 ### This path serves as a hands-on introduction to different areas within Cyber, including:
 
