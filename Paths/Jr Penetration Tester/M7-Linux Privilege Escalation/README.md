@@ -1,4 +1,4 @@
-# Task 9 - Privilege Escalation - NFS
+# Task 11 - Privilege Escalation - NFS
 
 SSH to the target machine with the low-privilege user credentials (I'm using AttackBox):
 
