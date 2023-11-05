@@ -1,3 +1,90 @@
+# Task 1 - Introduction
+Often during a penetration test, we will have access to some Windows hosts, but as an unprivileged user with limited access permissions, mainly to their files and folders only. As such, the user would have no ability to perform administrative tasks.
+
+This room covers fundamental techniques that penetration testers (or attackers) can use to elevate privileges in a Windows environment, giving us the ability to use an unprivileged foothold on a host to escalate to an administrator account.
+
+Q1: N/A
+
+### Let's GO!
+
+* * *
+
+# Task 2 - Windows Privilege Escalation Overview
+
+As we have learned, privilege escalation entails leveraging any access to a host with "User A" to gain access to "User B" through any weaknesses in the target system. Ideally, "User B" would have administrative rights, but in some situations we would need to escalate into other unprivileged accounts to find a way to escalate, as we saw in the Linux PrivEsc room.
+
+Depending on the situation, we can first focus on some of the following weaknesses:
+
+- Misconfigurations on Windows services or scheduled tasks
+- Excessive privileges assigned to our account
+- Vulnerable software
+- Missing Windows security patches
+
+Windows systems primarily have two types of users based on their access levels: 
+
+- Administrators - Have the most privileges. Can change any system config paramater and access any file in the system.
+- Standard Users - Can access the computer but perform limited tasks related to their role. But typically these users can't make changes to the system, aside from certain personalization and other abilities that are in-line with the company's policy.
+
+In addition, certain built-in accounts are typically used by the operating system in the context of privilege escalation:
+
+- SYSTEM / LocalSystem - An account used by the OS to perform internal tasks.
+- Local Service - A default account that runs Windows services with "minimum" privileges and anonymous connections over the network.
+- Network Service - A default account used to run Windows services with "minimum" privileges, but unlike "local" this account will use credentials to authenticate through the network.
+
+The three accounts above are created and managed by Windows, unlike other regular accounts. That said, depending on the situation, it is possible to gain these privileges by exploiting specific services.
+
+Q1: Users that can change system configurations are part of which group? 
+
+Q2: The SYSTEM account has more privileges than the Administrator user (aye/nay)
+
+* * *
+# Task 3 - Harvesting Passwords From Usual Spots
+
+The easiest way to gain access to another user is to harvest credentials from a compromised machine. It's possible that such credentials were left by a careless user in plaintext files, stored in software, such as browsers or email clients, as well as other possibilities.
+
+In this task we explore some known places to search for passwords on a **Windows** system.
+
+Starting the machine will open the split-screen view. If using the AttackBox or a VM, use Remmina (or other tool of your choice to connect via RDP using the following credentials:
+
+User: thm-unpriv
+Password: Password321
+
+* * *
+### Part One - Unattended Windows Installations
+* * *
+
+### Part Two - PowerShell History
+* * *
+### Part Three - Saved Windows Credentials
+* * *
+### Part Four - IIS Configuration
+* * *
+### Part Five - Credentials in Software (using PuTTY)
+* * * 
+
+Q1: A password for the julia.jones user has been left on the Powershell history. What is the password?
+
+Q2: A web server is running on the remote host. Find any interesting password on web.config files associated with IIS. What is the password of the db_admin user?
+
+Q3: There is a saved password on your Windows credentials. Using cmdkey and runas, spawn a shell for mike.katz and retrieve the flag from his desktop.
+
+Q4: Retrieve the saved password stored in the saved PuTTY session under your profile. What is the password for the thom.smith user?
+
+* * *
+
+# Task 4 - Other Quick Wins
+
+Occasionally, it may be relatively easy to locate credentials of users with higher privileges using service misconfigurations, and in some cases even admin credentials. It is definitely worth exploring some of the following methods.
+
+### Part One - Scheduled Tasks
+
+* * *
+
+### Part Two - AlwaysInstallElevated (Note: This technique apparently does not work in the room, but I will attempt to walk through it)
+
+
+* * *
+
 # Task 5 - Abusing Service Misconfigurations
 
 _Note: This is a long task, so I'm dividing it into Part One through Four to keep things organized and more readable._
@@ -326,4 +413,72 @@ Also, I just want to point out that while these are very well done walk-through 
 
 # Task 7 - Abusing Vulnerable Software
 
-***COMING SOON***
+***We Made it!***
+
+### Part One - Unpatched Software
+
+Numerous privilege escalation opportunities arise through unpatched, misconfigured, or other vulnerable software.
+
+#### 7.1.1
+To view the software installed on the target system, we can use the following command:
+
+`wmic product get name,version,vendor`
+
+After a few minutes we see the following information:
+
+![Pasted image 20231105093926](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/c35ae270-713c-4944-b122-5682036bf02c)
+
+As seen above, the `wmic product` command will not return all installed programs. It's always a good idea to enumerate as much as possible.
+
+Once we see product and version info, we can check sites such as [exploit-db](https://www.exploit-db.com/) for existing exploits on the programs found. 
+
+* * *
+
+### Part Two - Case Study
+
+For this task, we will be using the Druva inSync 6.6.3 program, for which a known vulnerability exists. [CVE-2020-5752](https://www.exploit-db.com/exploits/48505) was initially reported in 2020 by Matteo Malvica, but was based on a patched exploit found in the previous version of the software. According to his excellent [Writeup](https://www.matteomalvica.com/blog/2020/05/21/lpe-path-traversal/), the patch introduced an additional bug, essentially allowing a low-privileged user to obtain SYSTEM level privileges. 
+
+The vulnerability discovered in the patched version is a bit complex. That said, I am reading through the details in order to understand what's happening. 
+
+It's important to note that the second vulnerability was discovered in the process of the author's verification of the vendor's patch, and how it was implemented. In doing so, they discovered an unexpected new vulnerability.
+
+#### 7.2.1
+
+On to our task. If you are using the Target Windows machine in the task, the exploit is located in a text file at:
+
+`C:\tools\Druva_inSync_exploit.txt`
+
+By default, the exploit creates a new user named "pwnd", as specified in the `$cmd` variable, but this user is not assigned Admin privileges. For our purposes we will edit the exploit such that "pwnd" is also added to the Administrators' group, using the following:
+
+    `$cmd = "net user pwnd SimplePass123 /add & net localgroup administrators pwnd /add"`
+
+After making the edits, the exploit can be pasted directly into a PowerShell console. Hit enter and let's see if it worked!
+
+![Pasted image 20231105102454](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/2cface19-3609-4197-830e-7db2880167bc)
+
+Using the following in a command prompt: 
+
+    `net usr pwnd` 
+    
+we verify that the user `pwnd` was added with a password of `SimplePass123` and is part of the administrators' group 
+
+![Pasted image 20231105102232](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/78e64579-6261-4e4f-9f84-ea99debbaec8)
+
+#### 7.2.2
+
+Ok, good to go! Now we can run a command prompt as administrator, using the pwnd account:
+
+![Pasted image 20231105104521](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/2907adce-39d1-479f-98b0-10f452862bb4)
+
+Well, I don't know if I missed something, but I had to click on "More choices", point to the User pwnd, and the password was not accepted. Finally I just left the password field blank, hit enter, and got the admin prompt:
+
+![Pasted image 20231105110032](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/c979ff94-6521-4e24-ac68-1e88e7646fb9)
+
+![Pasted image 20231105105840](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/39c851c8-7c0e-4470-a376-4805d8aadd50)
+
+Now we can navigate to the Admin's desktop and grab that flag!
+
+![Pasted image 20231105110328](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/5a6fba11-d176-4911-b2ba-c5a8ef9dfa8d)
+
+
+And with that, we have completed the room as well as the Jr Penetration Tester Path!
