@@ -482,3 +482,5 @@ Now we can navigate to the Admin's desktop and grab that flag!
 
 
 And with that, we have completed the room as well as the Jr Penetration Tester Path!
+
+> Note: While I completed the path, I did not start these writeups initially, so I am gradually going back through the previous rooms to complete the writeups and will continue to update.
