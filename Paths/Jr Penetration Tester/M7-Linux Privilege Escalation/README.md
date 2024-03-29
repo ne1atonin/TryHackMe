@@ -1,3 +1,36 @@
+# Task 1 - Introduction
+
+# Task 2 -
+
+# Task 3 - Enumeration
+
+# Task 4 -
+
+# Task 9 - Privilege Escalation - Cron Jobs
+
+Cron Jobs are task automations using the cron command-line utility for Unix-type operating systems. Common examples include creating backups at regular intervals, clearing the cache, sending out notices, etc. A CronJob is used to run the scripts or binaries, scheduled at recurring intervals depending on the need. 
+
+The default privilege is according to the owner of the CronJob, NOT the current user. If properly configured, a CronJob is not inherently vulnerable. That said, if we can find a task that runs with root privileges, and we can modify the script, it will run with root privileges as per the owner of the job.
+
+The CronJob configs are stored as crontabs (tables), showing the next task scheduled to run. Each user has their own crontab file and tasks can obviously be scheduled to run whether the user is logged in or not. 
+
+Interestingly, the file holding system-wide CronJobs are stored under `/etc/crontab` and can be viewed by any user.
+
+As we see below, the backup.sh script is run as root!
+
+![image](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/0f562fa5-0459-4636-8cee-e5fe2fc198e2)
+
+![Pasted image 20231031115752](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/ae2aeca2-a04d-4d45-9057-8ea8016c7325)
+
+Note: I had to chmod +x to actually get the connection
+
+> TBC
+
+* * *
+
+# Task 10 - Privilege Escalation - PATH
+
+
 # Task 11 - Privilege Escalation - NFS
 
 SSH to the target machine with the low-privilege user credentials (I'm using AttackBox):
@@ -47,3 +80,26 @@ As seen above, the "no_root_squash" option is our key element for escalation. If
 ![Pasted image 20231101102733](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/9937eb73-3782-4336-a8a7-d54311a3a82d)
 
 ***On to the next and final task in this Module!***
+
+# Task 12 - Capstone Challenge
+
+***Context:***
+
+We have gained access to a large scientific facility. Try to elevate privileges until we are Root.
+
+Note: This room was designed to help us build a thorough methodology for Linux privilege escalation that will be useful in exams such as OSCP, as well as in Pentesting engagements. Privilege escalation is often more of an art than a science!
+
+I will be using the AttackBox to SSH into the machine using the following credentials:
+
+- Username: leonard
+- Password: Penny123
+
+### Enumeration
+
+1. Let's start with the basics
+   
+   ![Pasted image 20231101104232](https://github.com/ne1atonin/TryHackMe-WriteUps/assets/135453212/743960f4-395f-44c8-91d2-add1c83ef698)
+
+* * *
+
+> TBC
